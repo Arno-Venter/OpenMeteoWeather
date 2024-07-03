@@ -1,41 +1,42 @@
 import { TestBed } from "@angular/core/testing";
 
-import { PurpleAirHttpService } from "./purple-air-http.service";
+import { OpenMeteoHttpService } from "./open-meteo-http.service";
 import { provideHttpClient } from "@angular/common/http";
 import {
   HttpTestingController,
   provideHttpClientTesting,
 } from "@angular/common/http/testing";
 import { firstValueFrom } from "rxjs";
+import { ForecastFactory } from "../../test-helpers/forecast-factory";
 
 fdescribe("PurpleAirHttpService", () => {
-  let service: PurpleAirHttpService;
+  let service: OpenMeteoHttpService;
   let httpTesting: HttpTestingController;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        PurpleAirHttpService,
+        OpenMeteoHttpService,
         provideHttpClient(),
         provideHttpClientTesting(),
       ],
     });
     httpTesting = TestBed.inject(HttpTestingController);
-    service = TestBed.inject(PurpleAirHttpService);
+    service = TestBed.inject(OpenMeteoHttpService);
   });
 
   it("should be created", () => {
     expect(service).toBeTruthy();
   });
 
-  it("getSensors should make a GET request", async () => {
-    const response$ = service.getSensors();
+  it("getForecast should make a GET request", async () => {
+    const response$ = service.getForecast();
 
     const response = firstValueFrom(response$);
 
     const testRequest = httpTesting.expectOne({
       method: "GET",
-      url: "https://api.purpleair.com/v1/sensors?fields=sensor_index,last_seen,name,location_type,latitude,longitude,position_rating",
+      url: "https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&hourly=temperature_2m,apparent_temperature,precipitation_probability,relative_humidity_2m",
     });
 
     testRequest.flush({ peepee: "poopoo" });
@@ -43,5 +44,6 @@ fdescribe("PurpleAirHttpService", () => {
     expect(await response).toEqual({ peepee: "poopoo" });
 
     httpTesting.verify();
+    console.log(ForecastFactory.buildForecast(100));
   });
 });
