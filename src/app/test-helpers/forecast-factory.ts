@@ -1,4 +1,4 @@
-import { Forecast } from "../domain/model/forecast";
+import { ForecastResponse } from "../domain/model/ForecastResponse";
 import { HourlyForecast } from "../domain/model/hourly-forecast";
 
 export class ForecastFactory {
@@ -42,7 +42,7 @@ export class ForecastFactory {
     };
   }
 
-  static buildForecast(hoursAmount: number): Forecast {
+  static buildForecastResponse(hoursAmount: number): ForecastResponse {
     return {
       elevation: this.getRandomNumber(),
       hourly: this.buildHourlyForecast(hoursAmount),

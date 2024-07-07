@@ -1,6 +1,6 @@
 import { HourlyForecast } from "./hourly-forecast";
 
-export interface Forecast {
+export interface ForecastResponse {
   latitude: number;
   longitude: number;
   elevation: number;

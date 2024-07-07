@@ -1,14 +1,15 @@
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
+import { ForecastRequest } from "../../domain/model/ForecaseRequest";
 
 @Injectable()
 export class OpenMeteoHttpService {
   constructor(private http: HttpClient) {}
 
-  getForecast() {
+  getForecast(forecastRequest: ForecastRequest) {
     const params = new HttpParams()
-      .set("latitude", 52.52)
-      .set("longitude", 13.41)
+      .set("latitude", forecastRequest.latitude)
+      .set("longitude", forecastRequest.longitude)
       .set(
         "hourly",
         "temperature_2m,apparent_temperature,precipitation_probability,relative_humidity_2m",
