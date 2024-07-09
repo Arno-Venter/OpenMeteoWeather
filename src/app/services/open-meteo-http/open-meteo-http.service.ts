@@ -1,6 +1,7 @@
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { ForecastRequest } from "../../domain/model/ForecaseRequest";
+import { ForecastResponse } from "../../domain/model/ForecastResponse";
 
 @Injectable()
 export class OpenMeteoHttpService {
@@ -15,8 +16,11 @@ export class OpenMeteoHttpService {
         "temperature_2m,apparent_temperature,precipitation_probability,relative_humidity_2m",
       );
 
-    return this.http.get("https://api.open-meteo.com/v1/forecast", {
-      params: params,
-    });
+    return this.http.get<ForecastResponse>(
+      "https://api.open-meteo.com/v1/forecast",
+      {
+        params: params,
+      },
+    );
   }
 }

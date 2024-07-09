@@ -76,3 +76,15 @@ export const extractSuccessData = <TData, TError>() => {
     );
   };
 };
+
+export const extractErrorMessage = <TData, TError>() => {
+  return (obs: Observable<Query<TData, TError>>) => {
+    return obs.pipe(
+      filter(
+        (query): query is FailedQuery<TError> =>
+          query.status === QueryStatus.FAILURE,
+      ),
+      switchMap((query) => of(query.error)),
+    );
+  };
+};
