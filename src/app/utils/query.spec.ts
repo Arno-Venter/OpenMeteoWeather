@@ -1,9 +1,16 @@
 import { TestScheduler } from "rxjs/testing";
 import { ForecastResponse } from "../domain/model/ForecastResponse";
 import { ForecastFactory } from "../test-helpers/forecast-factory";
-import { QueryStatus, buildQuery } from "./query";
+import {
+  FailedQuery,
+  Query,
+  QueryStatus,
+  SuccessQuery,
+  buildQuery,
+  extractSuccessData,
+} from "./query";
 
-fdescribe("buildQuery", () => {
+describe("buildQuery operator", () => {
   let testScheduler: TestScheduler;
 
   beforeEach(() => {
@@ -45,6 +52,56 @@ fdescribe("buildQuery", () => {
       const result$ = response$.pipe(buildQuery());
 
       expectObservable(result$).toBe(expectedMarble, expectedBody);
+    });
+  });
+});
+
+describe("extractSuccessData", () => {
+  let testScheduler: TestScheduler;
+
+  beforeEach(() => {
+    testScheduler = new TestScheduler((actual, expected) => {
+      expect(actual).toEqual(expected);
+    });
+  });
+
+  it("transforms an observable of SuccessQuery into an observable of TData", () => {
+    testScheduler.run(({ cold, expectObservable }) => {
+      let forecastResponse = ForecastFactory.buildForecastResponse(100);
+      let successQuery = {
+        data: forecastResponse,
+        status: QueryStatus.SUCCESS,
+      };
+
+      let response$ = cold<SuccessQuery<ForecastResponse>>("--a", {
+        a: successQuery as SuccessQuery<ForecastResponse>,
+      });
+
+      let expectedMarble = "--a";
+      let expectedData = { a: forecastResponse };
+
+      const result$ = response$.pipe(extractSuccessData());
+
+      expectObservable(result$).toBe(expectedMarble, expectedData);
+    });
+  });
+
+  it("emits nothing with an observable of a non SuccessQuery", () => {
+    testScheduler.run(({ cold, expectObservable }) => {
+      let failedQuery = {
+        status: QueryStatus.FAILURE,
+        error: new Error("This is an error"),
+      };
+
+      let response$ = cold<FailedQuery<Error>>("--a", {
+        a: failedQuery as FailedQuery<Error>,
+      });
+
+      let expectedMarble = "---";
+
+      const result$ = response$.pipe(extractSuccessData());
+
+      expectObservable(result$).toBe(expectedMarble);
     });
   });
 });

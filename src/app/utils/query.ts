@@ -1,4 +1,13 @@
-import { OperatorFunction, catchError, map, of, startWith } from "rxjs";
+import {
+  Observable,
+  OperatorFunction,
+  catchError,
+  filter,
+  map,
+  of,
+  startWith,
+  switchMap,
+} from "rxjs";
 import { ForecastResponse } from "../domain/model/ForecastResponse";
 
 export enum QueryStatus {
@@ -8,21 +17,21 @@ export enum QueryStatus {
   UNSTARTED = "Unstarted",
 }
 
-type SuccessQuery<TData> = {
+export type SuccessQuery<TData> = {
   status: QueryStatus.SUCCESS;
   data: TData;
 };
 
-type FailedQuery<TError> = {
+export type FailedQuery<TError> = {
   status: QueryStatus.FAILURE;
   error: TError;
 };
 
-type LoadingQuery = {
+export type LoadingQuery = {
   status: QueryStatus.LOADING;
 };
 
-type UnstartedQuery = {
+export type UnstartedQuery = {
   status: QueryStatus.UNSTARTED;
 };
 
@@ -54,4 +63,16 @@ export const buildQuery = <TData, TError>(): OperatorFunction<
       }),
       startWith({ status: QueryStatus.LOADING } as LoadingQuery),
     );
+};
+
+export const extractSuccessData = <TData, TError>() => {
+  return (obs: Observable<Query<TData, TError>>) => {
+    return obs.pipe(
+      filter(
+        (query): query is SuccessQuery<TData> =>
+          query.status === QueryStatus.SUCCESS,
+      ),
+      switchMap((query) => of(query.data)),
+    );
+  };
 };
