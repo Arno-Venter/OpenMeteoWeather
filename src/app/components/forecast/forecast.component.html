@@ -1,7 +1,11 @@
-<form>
+<form [formGroup]="locationForm">
   <mat-form-field appearance="outline">
-    <mat-label>Your Location</mat-label>
-    <input matInput />
+    <mat-label>Latitude</mat-label>
+    <input matInput formControlName="latitude" />
+  </mat-form-field>
+  <mat-form-field appearance="outline">
+    <mat-label>Longitude</mat-label>
+    <input matInput formControlName="longitude" />
   </mat-form-field>
 </form>
 
